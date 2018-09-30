@@ -6,3 +6,8 @@ A container that implements the Network namespace should have its own (virtual) 
 
 ## Exercises
 * Determine the network throughput (read and write) of the container
+
+## How to run the excercise
+
+## How to check your work
+Look at the output of your program and you should see an average CPU usage of 50%

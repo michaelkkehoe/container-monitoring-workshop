@@ -7,3 +7,7 @@ cgroups allow for you to control the number of PID's active within a container
 ## Exercise
 * Provide a count of active PID's in a container
 * Provide the PID utilization for the container
+
+## How to run the excercise
+
+## How to check your work

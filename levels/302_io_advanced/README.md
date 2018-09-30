@@ -6,3 +6,8 @@ This will build upon levels 300 and 301. You will need to reimplement the same c
 * Determine the 95th percentile read and write IOPS of the container
 * Determine the 95th percentile read and write bandwidth utilization (percentage) of the contaienr
 * Determine the 95th percentile read and write IOPS utilization (percentage) of the container
+
+## How to run the excercise
+
+## How to check your work
+Look at the output of your program and you should see an average CPU usage of 50%
