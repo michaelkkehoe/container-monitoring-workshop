@@ -3,32 +3,35 @@ import signal
 import subprocess
 import time
 
-from cgroup import Cgroup
 import helpers
 
-CGROUP_DIR = "/sys/fs/cgroup/pids/"
+#from cgroups import Cgroup
+from cgroup import Cgroup
+
+CGROUP_DIR = "/sys/fs/cgroup/memory/"
 DEVNULL = open(os.devnull, 'w')
 
-def collect_pid_utilization(cgroup_name):
+
+def collect_memory(cgroup_name):
     """
-      Determine the utilization of PID's in a cgroup
+      Collect the average CPU utilization over a minute period
     """
     cgroup_stats_dir = os.path.join(CGROUP_DIR, cgroup_name)
-    pid_current = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'pids.current'), 'r').read())[0]
-    print pid_current
+    memory_limit = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'memory.limit_in_bytes'), 'r').read())[0]
+    memory_usage = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'memory.usage_in_bytes'), 'r').read())[0]
 
-    pid_max = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'pids.max'), 'r').read())[0]
-
-    if pid_current > 0:
-        return float(float(pid_current) / float(pid_max)) * 100
-    else:
-        return 0
+    memory_usage_percentage = 0
+    try:
+        memory_usage_percentage = 100.0 * memory_usage / memory_limit
+    except ZeroDivisionError:
+        pass
+    return memory_usage_percentage
 
 if __name__ == "__main__":
     pid = -1
 
     def _termination_handler(signal, frame):
-        cg = Cgroup('level_400')
+        cg = Cgroup('level_200')
         cg.remove_task(pid)
         cg.delete()
 
@@ -41,23 +44,18 @@ if __name__ == "__main__":
           Function to add new process into the cgroup
         """
         pid = os.getpid()
-        cg = Cgroup('level_400')
+        cg = Cgroup('level_200')
         cg.add_task(pid)
 
-    # Create a cgroup called "level_400", set the CPU limit to 50%, which is one core
-    cg = Cgroup('level_400')
-    cg.set_shares(2)
-    cg.set_cores(2)
-
-    # Set the max PID's to 10
-    cg.set_max_pids(10)
+    # Create a cgroup called "level_200", set the CPU limit to 50%, which is one core
+    cg = Cgroup('level_200')
+    cg.set_memory_limit(2)
 
     # Create a process and add it to the cgroup
     p1 = subprocess.Popen(["/bin/sysbench",
                            "--test=cpu",
-                           "--cpu-max-prime=1000000000",
                            "--num-threads=1",
-                           "--max-time=20",
+                           "--max-time=300",
                            "--forced-shutdown=0",
                            "run"],
                            stderr=DEVNULL,
@@ -67,5 +65,5 @@ if __name__ == "__main__":
 
     # Run the monitoring loop, report every 60 seconds
     while True:
-        print collect_pid_utilization("level_400")
-        time.sleep(5)
+        print collect_memory("level_200")
+        time.sleep(1)
