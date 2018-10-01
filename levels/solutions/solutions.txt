@@ -1,0 +1,56 @@
+100
+    num_periods_elapsed  = cpu_stat_nr_periods_curr - cpu_stat_nr_periods_prev
+    cpuacct_usage_diff_in_ns = cpuacct_usage_curr_in_ns - cpuacct_usage_prev_in_ns
+    max_allowed_cpu_time_in_us = num_periods_elapsed * cpu_cfs_quota_in_us
+
+
+    try:
+        cpu_usage_percentage = 100.0 * cpuacct_usage_diff_in_ns / (max_allowed_cpu_time_in_us * 1000)
+    except ZeroDivisionError:
+        pass
+    return cpu_usage_percentage
+
+101
+        percentages.append(cpu_usage_percentage)
+    return (numpy.average(percentages), numpy.percentile(percentages, percentile), numpy.std(percentages))
+
+
+102
+    # TODO by attendees: Calculate the number of throttles since the last measurement time
+    cpu_stat_nr_throttle = cpu_stat_nr_throttle_curr - cpu_stat_nr_throttle_prev
+    cpu_stat_nr_throttle_prev = cpu_stat_nr_throttle_curr
+
+    # TODO by attendees: Calculate the amount of time the cgroup is throttled (in ms) since the last measurement time
+    cpu_stat_throttled_time = float(cpu_stat_throttled_time_curr - cpu_stat_throttled_time_prev) / 1000000.00
+    cpu_stat_throttled_time_prev = cpu_stat_throttled_time_curr
+
+200
+    memory_limit = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'memory.limit_in_bytes'), 'r').read())[0]
+    memory_usage = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'memory.usage_in_bytes'), 'r').read())[0]
+
+201
+    swap_events_curr = helpers.parse_fk(open(os.path.join(cgroup_stats_dir, 'memory.stat'), 'r').read())['swap']
+    failed_allocations_curr = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'memory.memsw.failcnt'), 'r').read())[0]
+
+300
+    disk_read_bytes_curr = disk_stats['202:0']['Read']
+    disk_write_bytes_curr = disk_stats['202:0']['Write']
+    global disk_read_prev
+    global disk_write_prev
+
+    disk_read_bytes = disk_read_bytes_curr - disk_read_prev
+    disk_write_bytes = disk_write_bytes_curr - disk_write_prev
+
+    disk_read_prev = disk_read_bytes_curr
+    disk_write_prev = disk_write_bytes_curr
+    return disk_read_bytes, disk_write_bytes
+
+400
+    pid_current = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'pids.current'), 'r').read())[0]
+
+    pid_max = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'pids.max'), 'r').read())[0]
+
+    if pid_current > 0:
+        return float(float(pid_current) / float(pid_max)) * 100
+    else:
+        return 0

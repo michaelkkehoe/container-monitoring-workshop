@@ -3,10 +3,8 @@ import signal
 import subprocess
 import time
 
-import helpers
-
-#from cgroups import Cgroup
 from cgroup import Cgroup
+import helpers
 
 CGROUP_DIR = "/sys/fs/cgroup/cpu,cpuacct/"
 DEVNULL = open(os.devnull, 'w')
@@ -31,19 +29,11 @@ def collect_cpu(cgroup_name):
     # TODO by attendee: Calculate the CPU utilization. Use the algorithm in the exercise document
     global cpu_stat_nr_periods_prev
     global cpuacct_usage_prev_in_ns
-    num_periods_elapsed  = cpu_stat_nr_periods_curr - cpu_stat_nr_periods_prev
-    cpuacct_usage_diff_in_ns = cpuacct_usage_curr_in_ns - cpuacct_usage_prev_in_ns 
-    max_allowed_cpu_time_in_us = num_periods_elapsed * cpu_cfs_quota_in_us
 
     cpu_stat_nr_periods_prev = cpu_stat_nr_periods_curr
     cpuacct_usage_prev_in_ns = cpuacct_usage_curr_in_ns
 
     cpu_usage_percentage = 0 
-    try: 
-        cpu_usage_percentage = 100.0 * cpuacct_usage_diff_in_ns / (max_allowed_cpu_time_in_us * 1000) 
-    except ZeroDivisionError: 
-        pass 
-    return cpu_usage_percentage
 
 
 if __name__ == "__main__":

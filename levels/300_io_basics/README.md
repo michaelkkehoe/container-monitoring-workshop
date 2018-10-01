@@ -10,7 +10,5 @@
 * Determine the read and write bandwidth utilization (percentage) of the contaienr
 * Determine the read and write IOPS utilization (percentage) of the container
 
-## How to run the excercise
-
 ## How to check your work
-Look at the output of your program and you should see an average CPU usage of 50%
+You should see a write rate of 1MB/s

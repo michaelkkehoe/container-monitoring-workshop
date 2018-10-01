@@ -5,3 +5,5 @@ In the near future, AMI's, packet & Vagrant files will be available to start thi
 Strigio class links
 * [Velocity NY 2018](https://app.strigo.io/classes/46JEEwQYpJXX53wmS)
 * Velocity EU 2018
+
+After logging into the instance, go to `container-monitoring-workshop` and run `sudo su` to get root access

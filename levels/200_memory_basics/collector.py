@@ -17,8 +17,7 @@ def collect_memory(cgroup_name):
       Collect the average CPU utilization over a minute period
     """
     cgroup_stats_dir = os.path.join(CGROUP_DIR, cgroup_name)
-    memory_limit = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'memory.limit_in_bytes'), 'r').read())[0]
-    memory_usage = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'memory.usage_in_bytes'), 'r').read())[0]
+    # TODO by attendees: Find the right files to get the memory limit & memory usage
 
     memory_usage_percentage = 0
     try:

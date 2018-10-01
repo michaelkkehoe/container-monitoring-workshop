@@ -45,11 +45,10 @@ def collect_cpu(cgroup_name, percentile):
         except ZeroDivisionError: 
             pass
         # TODO by attendees: Add the percentage to a list
-        percentages.append(cpu_usage_percentage)
         time.sleep(1)
 
     # TODO by attendees: Calculate the percentile using numpy
-    return (numpy.average(percentages), numpy.percentile(percentages, percentile), numpy.std(percentages))
+    return None
 
 
 if __name__ == "__main__":

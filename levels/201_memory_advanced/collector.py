@@ -6,39 +6,37 @@ import time
 from cgroup import Cgroup
 import helpers
 
-import numpy
-
-CGROUP_DIR = "/sys/fs/cgroup/cpu,cpuacct/"
+CGROUP_DIR = "/sys/fs/cgroup/memory/"
 DEVNULL = open(os.devnull, 'w')
 
-cpu_stat_nr_throttle_prev = 0
-cpu_stat_throttled_time_prev = 0
+swap_events_prev = 0
+failed_allocations_prev = 0
 
-
-def collect_cpu(cgroup_name):
+def collect_memory(cgroup_name):
     """
       Collect the average CPU utilization over a minute period
     """
     cgroup_stats_dir = os.path.join(CGROUP_DIR, cgroup_name)
-    cpu_stats = helpers.parse_fk(open(os.path.join(cgroup_stats_dir, 'cpu.stat'), 'r').read())
+    # TODO by attendees: Get the following data and return a tuple:
+    # * number of swap events
+    # * number of memory+Swap hit limit events
 
-    global cpu_stat_nr_throttle_prev
-    global cpu_stat_throttled_time_prev
-    cpu_stat_nr_throttle_curr = cpu_stats['nr_throttled']
-    cpu_stat_throttled_time_curr = cpu_stats['throttled_time']
+    global swap_events_prev
+    global failed_allocations_prev
 
-    # TODO by attendees: Calculate the number of throttles since the last measurement time
+    swap_events = swap_events_curr - swap_events_prev
+    failed_allocations = failed_allocations_curr - failed_allocations_prev
 
-    # TODO by attendees: Calculate the amount of time the cgroup is throttled (in ms) since the last measurement time
+    swap_events_prev = swap_events_curr
+    failed_allocations_prev = failed_allocations_curr
 
-    return cpu_stat_nr_throttle, cpu_stat_throttled_time
-    
+    return swap_events, failed_allocations
 
 if __name__ == "__main__":
     pid = -1
 
     def _termination_handler(signal, frame):
-        cg = Cgroup('level_102')
+        cg = Cgroup('level_201')
         cg.remove_task(pid)
         cg.delete()
 
@@ -51,19 +49,17 @@ if __name__ == "__main__":
           Function to add new process into the cgroup
         """
         pid = os.getpid()
-        cg = Cgroup('level_102')
+        cg = Cgroup('level_201')
         cg.add_task(pid)
 
-    # Create a cgroup called "level_102", set the CPU limit to 50%, which is one core
-    cg = Cgroup('level_102')
-    cg.set_shares(1)
-    cg.set_cores(1)
+    # Create a cgroup called "level_201", set the CPU limit to 50%, which is one core
+    cg = Cgroup('level_201')
+    cg.set_memory_limit(2)
 
     # Create a process and add it to the cgroup
     p1 = subprocess.Popen(["/bin/sysbench",
                            "--test=cpu",
-                           "--cpu-max-prime=1000000000",
-                           "--num-threads=2",
+                           "--num-threads=1",
                            "--max-time=300",
                            "--forced-shutdown=0",
                            "run"],
@@ -71,8 +67,7 @@ if __name__ == "__main__":
                            stdout=DEVNULL,
                            preexec_fn=in_my_cgroup)
 
-
     # Run the monitoring loop, report every 60 seconds
     while True:
-        print collect_cpu("level_102")
-        time.sleep(10)
+        print collect_memory("level_201")
+        time.sleep(1)

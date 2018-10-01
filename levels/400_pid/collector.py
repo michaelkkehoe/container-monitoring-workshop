@@ -14,15 +14,7 @@ def collect_pid_utilization(cgroup_name):
       Determine the utilization of PID's in a cgroup
     """
     cgroup_stats_dir = os.path.join(CGROUP_DIR, cgroup_name)
-    pid_current = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'pids.current'), 'r').read())[0]
-    print pid_current
-
-    pid_max = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'pids.max'), 'r').read())[0]
-
-    if pid_current > 0:
-        return float(float(pid_current) / float(pid_max)) * 100
-    else:
-        return 0
+    # TODO by attendee: Get the current number of pids, max number of pids & determine the percentage utilization
 
 if __name__ == "__main__":
     pid = -1
