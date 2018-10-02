@@ -52,7 +52,7 @@ if __name__ == "__main__":
     cg.set_io_write_bps("202:0", 1048576)
 
     # Create a process and add it to the cgroup
-    p1 = subprocess.Popen(["/bin/dd",
+    p1 = subprocess.Popen([helpers.dd(),
                            "if=/dev/zero",
                            "of=/tmp/test.ig",
                            "oflag=direct",

@@ -1,5 +1,6 @@
 from collections import defaultdict
 import numpy
+import subprocess
 
 def calculate_percentile(data_list, percentile):
     """
@@ -79,3 +80,10 @@ def parse_nk(content):
         except IndexError:
            pass
     return ret
+def dd():
+    """
+        get the patch for sysbench so it will work on ubuntu/redhat 
+    """
+    output = str(subprocess.check_output(['which','dd'])).replace("\n","")
+    return output
+
