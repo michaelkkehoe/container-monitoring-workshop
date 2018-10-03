@@ -1,4 +1,5 @@
 import numpy
+import subprocess
 
 def calculate_percentile(data_list, percentile):
     """
@@ -55,3 +56,9 @@ def parse_fk(content):
         name, val = line.split(' ')
         ret[name] = long(val)
     return ret
+def sysbench():
+    """
+        get the patch for sysbench so it will work on ubuntu/redhat 
+    """
+    output = str(subprocess.check_output(['which','sysbench'])).replace("\n","")
+    return output

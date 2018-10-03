@@ -62,7 +62,7 @@ if __name__ == "__main__":
     cg.set_cores(2)
 
     # Create a process and add it to the cgroup
-    p1 = subprocess.Popen(["/bin/sysbench",
+    p1 = subprocess.Popen([ helpers.sysbench(),
                            "--test=cpu",
                            "--cpu-max-prime=1000000000",
                            "--num-threads=1",

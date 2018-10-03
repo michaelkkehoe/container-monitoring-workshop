@@ -57,7 +57,7 @@ if __name__ == "__main__":
     cg.set_memory_limit(2)
 
     # Create a process and add it to the cgroup
-    p1 = subprocess.Popen(["/bin/sysbench",
+    p1 = subprocess.Popen([helpers.sysbench(),
                            "--test=cpu",
                            "--num-threads=1",
                            "--max-time=300",
