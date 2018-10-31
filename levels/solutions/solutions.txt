@@ -50,6 +50,9 @@
 
     pid_max = helpers.parse_nlsv(open(os.path.join(cgroup_stats_dir, 'pids.max'), 'r').read())[0]
 
+    if pid_max == "max":
+        pid_max = helpers.parse_nlsv(open("/proc/sys/kernel/pid_max", 'r').read())[0]
+
     if pid_current > 0:
         return float(float(pid_current) / float(pid_max)) * 100
     else:
